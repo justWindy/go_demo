@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"golang.org/x/sync/singleflight"
 	"runtime"
 	"runtime/debug"
 	"sync"
 	"testing"
+
+	"golang.org/x/sync/singleflight"
 )
 
 var (

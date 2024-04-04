@@ -2,8 +2,9 @@ package channel
 
 import (
 	"fmt"
-	"golang.org/x/exp/constraints"
 	"testing"
+
+	"golang.org/x/exp/constraints"
 )
 
 func asStream[T any](done <-chan struct{}, values ...T) <-chan T {
@@ -98,5 +99,4 @@ func TestMapReduce(t *testing.T) {
 
 	sum := reduce(mapChan(in, mapFn), reduceFn)
 	fmt.Println(sum)
-
 }

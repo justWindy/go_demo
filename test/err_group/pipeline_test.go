@@ -4,10 +4,11 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
-	"github/justWindy/go_demo/utils"
-	"golang.org/x/sync/errgroup"
 	"io/fs"
 	"path/filepath"
+
+	"github/justWindy/go_demo/utils"
+	"golang.org/x/sync/errgroup"
 )
 
 type result struct {
@@ -56,7 +57,6 @@ func MD5All(ctx context.Context, root string) (map[string][md5.Size]byte, error)
 	}
 
 	return m, nil
-
 }
 
 func calculateMD5(input string) [md5.Size]byte {

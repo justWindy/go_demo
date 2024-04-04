@@ -3,10 +3,11 @@ package semphore
 import (
 	"context"
 	"fmt"
-	"golang.org/x/sync/semaphore"
 	"runtime"
 	"testing"
 	"time"
+
+	"golang.org/x/sync/semaphore"
 )
 
 //type semaphore struct {
@@ -56,5 +57,4 @@ func TestSemaphore(t *testing.T) {
 	}
 
 	fmt.Println(task)
-
 }

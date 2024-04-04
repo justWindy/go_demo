@@ -4,17 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-pkgz/syncs"
-	"github.com/mdlayher/schedgroup"
-	"github.com/vardius/gollback"
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"github.com/go-pkgz/syncs"
+	"github.com/mdlayher/schedgroup"
+	"github.com/vardius/gollback"
 )
 
 func TestSizeGroupUsing(t *testing.T) {
 	swg := syncs.NewSizedGroup(10)
-	//swg = syncs.NewSizedGroup(10, syncs.Preemptive)
+	// swg = syncs.NewSizedGroup(10, syncs.Preemptive)
 	var c uint32
 
 	for i := 0; i < 1000; i++ {

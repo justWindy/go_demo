@@ -4,15 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/marusama/cyclicbarrier"
 	"math/rand"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/marusama/cyclicbarrier"
 )
 
 type cyclicBarry2 interface {
-	//等待所有的参与者到达，如果被ctx.Done()中断，则会返回ErrBrokenBarrier
+	// 等待所有的参与者到达，如果被ctx.Done()中断，则会返回ErrBrokenBarrier
 	Await(ctx context.Context) error
 
 	// 重置循环屏障到初始状态。如果当前有等待着，那么它们会返回ErrBrokenBarrier
@@ -44,9 +45,7 @@ type cyclicBarry struct {
 }
 
 func (b *cyclicBarry) Await(ctx context.Context) error {
-	var (
-		ctxDoneCh <-chan struct{}
-	)
+	var ctxDoneCh <-chan struct{}
 
 	if ctx != nil {
 		ctxDoneCh = ctx.Done()
@@ -58,7 +57,7 @@ func (b *cyclicBarry) Await(ctx context.Context) error {
 		return ctx.Err()
 	default:
 	}
-	//加锁
+	// 加锁
 	b.lock.Lock()
 
 	// 如果这一轮的等待和释放已经完成
@@ -77,7 +76,7 @@ func (b *cyclicBarry) Await(ctx context.Context) error {
 
 	b.lock.Unlock()
 
-	//下面就不需要锁了，因为本轮的对象已经获取到本地变量了
+	// 下面就不需要锁了，因为本轮的对象已经获取到本地变量了
 	if count > b.parties {
 		panic("CyclicBarrier.Await is called more than count of parties")
 	}

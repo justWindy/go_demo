@@ -3,9 +3,10 @@ package err_group
 import (
 	"errors"
 	"fmt"
-	"golang.org/x/sync/errgroup"
 	"testing"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
 func TestErrGroupUsing(t *testing.T) {

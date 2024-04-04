@@ -1,10 +1,11 @@
 package rate_limit
 
 import (
-	"go.uber.org/ratelimit"
 	"log"
 	"testing"
 	"time"
+
+	"go.uber.org/ratelimit"
 )
 
 func TestUberRateLimit(t *testing.T) {

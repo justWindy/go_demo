@@ -2,18 +2,19 @@ package rate_limit
 
 import (
 	"context"
-	"golang.org/x/time/rate"
 	"log"
 	"testing"
 	"time"
+
+	"golang.org/x/time/rate"
 )
 
 func TestRateLimiter(t *testing.T) {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds)
 	// 令牌产生速率，每200ms产生一个令牌
-	var limit = rate.Every(200 * time.Millisecond)
+	limit := rate.Every(200 * time.Millisecond)
 
-	var limiter = rate.NewLimiter(limit, 3) // 令牌桶的容量为3
+	limiter := rate.NewLimiter(limit, 3) // 令牌桶的容量为3
 
 	for i := 0; i < 15; i++ {
 		log.Printf("got #%d, err: %v\n", i, limiter.Wait(context.Background()))
@@ -23,8 +24,8 @@ func TestRateLimiter(t *testing.T) {
 func TestSetLimitAt(t *testing.T) {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds)
 
-	var limit = rate.Every(200 * time.Millisecond)
-	var limiter = rate.NewLimiter(limit, 3)
+	limit := rate.Every(200 * time.Millisecond)
+	limiter := rate.NewLimiter(limit, 3)
 
 	for i := 0; i < 3; i++ {
 		log.Printf("got #%d, err: %v", i, limiter.Wait(context.Background()))
@@ -39,7 +40,7 @@ func TestSetLimitAt(t *testing.T) {
 }
 
 func TestReserveN(t *testing.T) {
-	var limiter = rate.NewLimiter(1, 10)
+	limiter := rate.NewLimiter(1, 10)
 	limiter.WaitN(context.Background(), 10) // 把初始的令牌消耗掉
 
 	r := limiter.ReserveN(time.Now().Add(5), 4)
