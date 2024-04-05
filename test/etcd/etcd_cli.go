@@ -15,7 +15,7 @@ import (
 
 var (
 	nodeID    = flag.Int("id", 0, "node ID")
-	addr      = flag.String("addr", "http://192.168.50.89:2379", "etcd address")
+	addr      = flag.String("addr", "http://192.168.50.89:12379,http://192.168.50.89:22379,http://192.168.50.89:32379", "etcd address")
 	electName = flag.String("name", "my-test-elect", "election name")
 )
 

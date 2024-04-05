@@ -2,6 +2,7 @@ package utils
 
 import (
 	"reflect"
+	"strconv"
 	"unsafe"
 )
 
@@ -17,4 +18,15 @@ func Str2byte(s string) (b []byte) {
 	sliceHeader.Len = stringHeader.Len
 	sliceHeader.Cap = stringHeader.Len
 	return
+}
+
+func ToUint64(b []byte) uint64 {
+	s := Byte2string(b)
+	i, _ := strconv.ParseUint(s, 10, 64)
+	return i
+}
+
+func FromUint64(i uint64) string {
+	s := strconv.FormatUint(i, 10)
+	return s
 }
