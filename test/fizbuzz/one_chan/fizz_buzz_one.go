@@ -6,40 +6,28 @@ import (
 )
 
 type FizzBuzz struct {
-	n   int
-	chs []chan int
-	wg  sync.WaitGroup
+	n  int
+	ch chan int
+	wg sync.WaitGroup
 }
 
-func NewFizzBuzz(n int) *FizzBuzz {
-	chs := make([]chan int, 4)
-	for i := 0; i < 4; i++ {
-		chs[i] = make(chan int, 1)
+func New(n int) *FizzBuzz {
+	return &FizzBuzz{
+		n:  n,
+		ch: make(chan int, 1),
 	}
-	return &FizzBuzz{n: n, chs: chs}
-}
-
-func (fb *FizzBuzz) start() {
-	fb.wg.Add(4)
-	go fb.fizz()
-	go fb.buzz()
-	go fb.fizzbuzz()
-	go fb.number()
-	fb.chs[0] <- 1
-	fb.wg.Wait()
 }
 
 func (fb *FizzBuzz) fizz() {
 	defer fb.wg.Done()
-	next := fb.chs[1]
-	for v := range fb.chs[0] {
+	for v := range fb.ch {
 		if v > fb.n {
-			next <- v
+			fb.ch <- v
 			return
 		}
 		if v%3 == 0 {
 			if v%5 == 0 {
-				next <- v
+				fb.ch <- v
 				continue
 			}
 			if v == fb.n {
@@ -47,24 +35,23 @@ func (fb *FizzBuzz) fizz() {
 			} else {
 				fmt.Print(" fizz,")
 			}
-			next <- v + 1
+			fb.ch <- v + 1
 			continue
 		}
-		next <- v
+		fb.ch <- v
 	}
 }
 
 func (fb *FizzBuzz) buzz() {
 	defer fb.wg.Done()
-	next := fb.chs[2]
-	for v := range fb.chs[1] {
+	for v := range fb.ch {
 		if v > fb.n {
-			next <- v
+			fb.ch <- v
 			return
 		}
 		if v%5 == 0 {
 			if v%3 == 0 {
-				next <- v
+				fb.ch <- v
 				continue
 			}
 			if v == fb.n {
@@ -72,40 +59,38 @@ func (fb *FizzBuzz) buzz() {
 			} else {
 				fmt.Print(" buzz,")
 			}
-			next <- v + 1
+			fb.ch <- v + 1
 			continue
 		}
-		next <- v
+		fb.ch <- v
 	}
 }
 
 func (fb *FizzBuzz) fizzbuzz() {
 	defer fb.wg.Done()
-	next := fb.chs[3]
-	for v := range fb.chs[2] {
+	for v := range fb.ch {
 		if v > fb.n {
-			next <- v
+			fb.ch <- v
 			return
 		}
 		if v%5 == 0 && v%3 == 0 {
 			if v == fb.n {
-				fmt.Print(" fizzbuzz. ")
+				fmt.Print(" fizzbuzz.")
 			} else {
 				fmt.Print(" fizzbuzz,")
 			}
-			next <- v + 1
+			fb.ch <- v + 1
 			continue
 		}
-		next <- v
+		fb.ch <- v
 	}
 }
 
 func (fb *FizzBuzz) number() {
 	defer fb.wg.Done()
-	next := fb.chs[0]
-	for v := range fb.chs[3] {
+	for v := range fb.ch {
 		if v > fb.n {
-			next <- v
+			fb.ch <- v
 			return
 		}
 		if v%5 != 0 && v%3 != 0 {
@@ -114,14 +99,25 @@ func (fb *FizzBuzz) number() {
 			} else {
 				fmt.Printf(" %d,", v)
 			}
-			next <- v + 1
+			fb.ch <- v + 1
 			continue
 		}
-		next <- v
+		fb.ch <- v
 	}
 }
 
+func (fb *FizzBuzz) start() {
+	fb.wg.Add(4)
+	go fb.fizz()
+	go fb.buzz()
+	go fb.fizzbuzz()
+	go fb.number()
+
+	fb.ch <- 1
+	fb.wg.Wait()
+}
+
 func main() {
-	fb := NewFizzBuzz(15)
+	fb := New(15)
 	fb.start()
 }

@@ -1,22 +1,24 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"sync"
+
+	"github.com/marusama/cyclicbarrier"
 )
 
 type FizzBuzz struct {
-	n   int
-	chs []chan int
-	wg  sync.WaitGroup
+	n       int
+	barrier cyclicbarrier.CyclicBarrier
+	wg      sync.WaitGroup
 }
 
-func NewFizzBuzz(n int) *FizzBuzz {
-	chs := make([]chan int, 4)
-	for i := 0; i < 4; i++ {
-		chs[i] = make(chan int, 1)
+func New(n int) *FizzBuzz {
+	return &FizzBuzz{
+		n:       n,
+		barrier: cyclicbarrier.New(4),
 	}
-	return &FizzBuzz{n: n, chs: chs}
 }
 
 func (fb *FizzBuzz) start() {
@@ -25,21 +27,22 @@ func (fb *FizzBuzz) start() {
 	go fb.buzz()
 	go fb.fizzbuzz()
 	go fb.number()
-	fb.chs[0] <- 1
+
 	fb.wg.Wait()
 }
 
 func (fb *FizzBuzz) fizz() {
 	defer fb.wg.Done()
-	next := fb.chs[1]
-	for v := range fb.chs[0] {
+	ctx := context.Background()
+	v := 0
+	for {
+		fb.barrier.Await(ctx)
+		v++
 		if v > fb.n {
-			next <- v
 			return
 		}
-		if v%3 == 0 {
-			if v%5 == 0 {
-				next <- v
+		if v % 3 == 0 {
+			if v % 5 == 0 {
 				continue
 			}
 			if v == fb.n {
@@ -47,24 +50,22 @@ func (fb *FizzBuzz) fizz() {
 			} else {
 				fmt.Print(" fizz,")
 			}
-			next <- v + 1
-			continue
 		}
-		next <- v
 	}
 }
 
 func (fb *FizzBuzz) buzz() {
 	defer fb.wg.Done()
-	next := fb.chs[2]
-	for v := range fb.chs[1] {
+	ctx := context.Background()
+	v := 0
+	for {
+		fb.barrier.Await(ctx)
+		v++
 		if v > fb.n {
-			next <- v
 			return
 		}
 		if v%5 == 0 {
 			if v%3 == 0 {
-				next <- v
 				continue
 			}
 			if v == fb.n {
@@ -72,19 +73,18 @@ func (fb *FizzBuzz) buzz() {
 			} else {
 				fmt.Print(" buzz,")
 			}
-			next <- v + 1
-			continue
 		}
-		next <- v
 	}
 }
 
 func (fb *FizzBuzz) fizzbuzz() {
 	defer fb.wg.Done()
-	next := fb.chs[3]
-	for v := range fb.chs[2] {
+	ctx := context.Background()
+	v := 0 
+	for {
+		fb.barrier.Await(ctx)
+		v++
 		if v > fb.n {
-			next <- v
 			return
 		}
 		if v%5 == 0 && v%3 == 0 {
@@ -93,19 +93,18 @@ func (fb *FizzBuzz) fizzbuzz() {
 			} else {
 				fmt.Print(" fizzbuzz,")
 			}
-			next <- v + 1
-			continue
 		}
-		next <- v
 	}
 }
 
 func (fb *FizzBuzz) number() {
 	defer fb.wg.Done()
-	next := fb.chs[0]
-	for v := range fb.chs[3] {
+	ctx := context.Background()
+	v := 0
+	for {
+		fb.barrier.Await(ctx)
+		v++
 		if v > fb.n {
-			next <- v
 			return
 		}
 		if v%5 != 0 && v%3 != 0 {
@@ -114,14 +113,11 @@ func (fb *FizzBuzz) number() {
 			} else {
 				fmt.Printf(" %d,", v)
 			}
-			next <- v + 1
-			continue
 		}
-		next <- v
 	}
 }
 
 func main() {
-	fb := NewFizzBuzz(15)
+	fb := New(15)
 	fb.start()
 }
